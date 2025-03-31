@@ -7,7 +7,7 @@ final class ImagesListViewController: UIViewController {
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ru_RU") 
+        formatter.locale = Locale(identifier: "ru_RU")
         formatter.dateStyle = .long
         formatter.timeStyle = .none
         return formatter
@@ -53,8 +53,9 @@ extension ImagesListViewController {
 }
 
 extension ImagesListViewController: UITableViewDelegate {
-    //TODO
-    //func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { }
+    
+    //TODO: сделаю в следующем спринте
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
