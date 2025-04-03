@@ -1,13 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cjM-TJ-IOZ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cjM-TJ-IOZ">
     <device id="retina6_9" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Single Image View Controller-->
+        <scene sceneID="vpT-R3-NtW">
+            <objects>
+                <viewController modalPresentationStyle="fullScreen" id="J0m-MS-8DA" customClass="SingleImageViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="O6s-JV-8L6">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qp9-6R-i9i">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="uHn-vd-ehw">
+                                        <rect key="frame" x="0.0" y="0.0" width="271" height="352"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
+                                </subviews>
+                                <viewLayoutGuide key="contentLayoutGuide" id="iWu-F4-y0d"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="lwk-fc-SVy"/>
+                                <connections>
+                                    <outlet property="delegate" destination="J0m-MS-8DA" id="Xtb-Np-trt"/>
+                                </connections>
+                            </scrollView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5WU-U7-8sm" userLabel="Logout Button">
+                                <rect key="frame" x="8" y="70" width="48" height="48"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="EkU-FC-CJT"/>
+                                    <constraint firstAttribute="width" constant="48" id="iPI-Hk-q71"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="nav_back_button_white"/>
+                                <connections>
+                                    <action selector="didTapBackButton" destination="J0m-MS-8DA" eventType="touchUpInside" id="mnJ-yH-e0L"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="elI-I0-1Zb" userLabel="Share Button">
+                                <rect key="frame" x="195" y="855" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="E12-zd-50X"/>
+                                    <constraint firstAttribute="height" constant="50" id="IZ3-EQ-BCW"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="share_button"/>
+                                <connections>
+                                    <action selector="didTapShareButton:" destination="J0m-MS-8DA" eventType="touchUpInside" id="TKj-8E-92u"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Nn0-7a-KVL"/>
+                        <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="5WU-U7-8sm" firstAttribute="leading" secondItem="Nn0-7a-KVL" secondAttribute="leading" constant="8" id="CFY-Mj-ova"/>
+                            <constraint firstItem="qp9-6R-i9i" firstAttribute="leading" secondItem="Nn0-7a-KVL" secondAttribute="leading" id="GD8-XK-elN"/>
+                            <constraint firstItem="qp9-6R-i9i" firstAttribute="top" secondItem="O6s-JV-8L6" secondAttribute="top" id="T7v-VL-RWA"/>
+                            <constraint firstItem="Nn0-7a-KVL" firstAttribute="bottom" secondItem="elI-I0-1Zb" secondAttribute="bottom" constant="17" id="Tgl-fT-qaF"/>
+                            <constraint firstItem="Nn0-7a-KVL" firstAttribute="trailing" secondItem="qp9-6R-i9i" secondAttribute="trailing" id="UeU-kx-jf6"/>
+                            <constraint firstItem="elI-I0-1Zb" firstAttribute="centerX" secondItem="Nn0-7a-KVL" secondAttribute="centerX" id="Wuz-Ia-NW1"/>
+                            <constraint firstAttribute="bottom" secondItem="qp9-6R-i9i" secondAttribute="bottom" id="c1N-eW-H5H"/>
+                            <constraint firstItem="5WU-U7-8sm" firstAttribute="top" secondItem="Nn0-7a-KVL" secondAttribute="top" constant="8" id="ye4-kl-sLu"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="oZX-4L-GIV"/>
+                    <connections>
+                        <outlet property="imageView" destination="uHn-vd-ehw" id="iAl-Ze-7MQ"/>
+                        <outlet property="scrollView" destination="qp9-6R-i9i" id="4Y5-Tb-APs"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="djV-ha-v3K" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2427" y="-1014"/>
+        </scene>
         <!--ImagesList-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -103,14 +173,16 @@
                             <constraint firstAttribute="trailing" secondItem="EVZ-TO-Y7k" secondAttribute="trailing" id="yDS-L9-syi"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="5cv-qH-7g7"/>
+                    <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="x82-IV-ckR"/>
+                    <navigationItem key="navigationItem" id="jYk-Ib-wDN"/>
                     <connections>
                         <outlet property="tableView" destination="EVZ-TO-Y7k" id="gLV-JY-xrH"/>
+                        <segue destination="J0m-MS-8DA" kind="presentation" identifier="ShowSingleImage" id="MHp-UV-gvY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3289" y="-319"/>
+            <point key="canvasLocation" x="-2397.2727272727275" y="-319.45606694560672"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Q4p-iv-qXc">
@@ -126,8 +198,8 @@
                         </tabBarAppearance>
                     </tabBar>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="YNk-7G-NTt"/>
-                        <segue destination="II9-bc-InM" kind="relationship" relationship="viewControllers" id="FuX-nI-01l"/>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="aUl-3I-XLf"/>
+                        <segue destination="II9-bc-InM" kind="relationship" relationship="viewControllers" id="sQi-1h-bxq"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KdY-pY-7yP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -143,20 +215,20 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="V3I-08-K3r" userLabel="Avatar Image View">
-                                <rect key="frame" x="16" y="94" width="70" height="70"/>
+                                <rect key="frame" x="16" y="156" width="70" height="70"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="70" id="5TJ-ZX-xzM"/>
                                     <constraint firstAttribute="width" secondItem="V3I-08-K3r" secondAttribute="height" multiplier="1:1" id="RB8-BT-jVu"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Екатерина Новикова" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zgn-pI-E5U" userLabel="Name Label">
-                                <rect key="frame" x="16" y="172" width="408" height="27.666666666666657"/>
+                                <rect key="frame" x="16" y="234" width="408" height="27.666666666666686"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="23"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vYw-n4-Ubd" userLabel="Logout Button">
-                                <rect key="frame" x="380" y="107" width="44" height="44"/>
+                                <rect key="frame" x="380" y="169" width="44" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="44" id="DyA-Eu-nMC"/>
                                     <constraint firstAttribute="height" constant="44" id="eB5-YE-3Da"/>
@@ -168,13 +240,13 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@ekaterina_nov" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pKM-W6-PbH" userLabel="Login Name Label">
-                                <rect key="frame" x="16" y="207.66666666666666" width="408" height="15.666666666666657"/>
+                                <rect key="frame" x="16" y="269.66666666666669" width="408" height="15.666666666666686"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" red="0.68235294120000001" green="0.68627450980000004" blue="0.70588235290000001" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hello, World!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OPv-GE-gvK" userLabel="Description Label">
-                                <rect key="frame" x="16" y="231.33333333333334" width="408" height="15.666666666666657"/>
+                                <rect key="frame" x="16" y="293.33333333333331" width="408" height="15.666666666666686"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -217,6 +289,8 @@
         <image name="avatar" width="70" height="70"/>
         <image name="like_button_on" width="42" height="42"/>
         <image name="logout_button" width="44" height="44"/>
+        <image name="nav_back_button_white" width="24" height="24"/>
+        <image name="share_button" width="50" height="50"/>
         <image name="tab_editorial_active" width="30" height="30"/>
         <image name="tab_profile_active" width="30" height="30"/>
     </resources>
