@@ -9,55 +9,81 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(hex: "#1A1B22")
+        view.backgroundColor = UIColor(named: "BackgroundPrimary")
+        setupUI()
+    }
+    
+    private func setupUI() {
+        setupAvatarImageView()
+        setupNameLabel()
+        setupLoginNameLabel()
+        setupDescriptionLabel()
+        setupLogoutButton()
+        setupConstraints()
+    }
+    
+    // Аватар
+    private func setupAvatarImageView() {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "avatar")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        view.addSubview(imageView)
+        avatarImageView = imageView
+    }
+    
+    // Name Label
+    private func setupNameLabel() {
+        let label = UILabel()
+        label.text = "Ирина Новикова"
+        label.textColor = UIColor(named: "TextPrimary")
+        label.font = UIFont.boldSystemFont(ofSize: 23)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        nameLabel = label
+    }
+    
+    // Login Name Label
+    private func setupLoginNameLabel() {
+        let label = UILabel()
+        label.text = "@ekaterina_nov"
+        label.textColor = UIColor(named: "TextSecondary")
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        loginNameLabel = label
+    }
+    
+    // Description Label
+    private func setupDescriptionLabel() {
+        let label = UILabel()
+        label.text = "Hello, World!"
+        label.textColor = UIColor(named: "TextPrimary")
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        descriptionLabel = label
+    }
+    
+    // Logout Button
+    private func setupLogoutButton() {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "logout_button"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
+        view.addSubview(button)
+        logoutButton = button
+    }
+    
+    // Constraints
+    private func setupConstraints() {
+        guard let avatarImageView,
+              let nameLabel,
+              let loginNameLabel,
+              let descriptionLabel,
+              let logoutButton else { return }
         
-        
-        // Аватар
-        let avatarImageView = UIImageView()
-        avatarImageView.image = UIImage(named: "avatar")
-        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
-        avatarImageView.contentMode = .scaleAspectFill
-        avatarImageView.clipsToBounds = true
-        view.addSubview(avatarImageView)
-        self.avatarImageView = avatarImageView
-        
-        // Name Label
-        let nameLabel = UILabel()
-        nameLabel.text = "Ирина Новикова"
-        nameLabel.textColor = UIColor(hex: "#FFFFFF")
-        nameLabel.font = UIFont.boldSystemFont(ofSize: 23)
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(nameLabel)
-        self.nameLabel = nameLabel
-        
-        // Login Name Label
-        let loginNameLabel = UILabel()
-        loginNameLabel.text = "@ekaterina_nov"
-        loginNameLabel.textColor = UIColor(hex: "#AEAFB4")
-        loginNameLabel.font = UIFont.systemFont(ofSize: 13)
-        loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(loginNameLabel)
-        self.loginNameLabel = loginNameLabel
-        
-        
-        // Description Label
-        let descriptionLabel = UILabel()
-        descriptionLabel.text = "Hello, World!"
-        descriptionLabel.textColor = UIColor(hex: "#FFFFFF")
-        descriptionLabel.font = UIFont.systemFont(ofSize: 13)
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(descriptionLabel)
-        self.descriptionLabel = descriptionLabel
-        
-        // Logout Button
-        let logoutButton = UIButton(type: .custom)
-        logoutButton.setImage(UIImage(named: "logout_button"),for: .normal)
-        logoutButton.translatesAutoresizingMaskIntoConstraints = false
-        logoutButton.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
-        view.addSubview(logoutButton)
-        self.logoutButton = logoutButton
-        
-        // Constraints
         NSLayoutConstraint.activate([
             avatarImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
