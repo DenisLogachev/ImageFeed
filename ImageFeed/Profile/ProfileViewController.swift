@@ -109,7 +109,26 @@ final class ProfileViewController: UIViewController {
     
     @objc
     private func didTapLogoutButton() {
-        print("Logout tapped")
+        print ("Logout tapped")
+        OAuth2TokenStorage().token = nil
+        switchToSplash()
+    }
+    
+    private func switchToSplash() {
+        guard let window = UIApplication.shared.windows.first else {
+            print("Error: No window")
+            return
+        }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+        guard let splashVC = storyboard.instantiateViewController(withIdentifier: "SplashViewController") as? SplashViewController else {
+            print("Error: Cannot instantiate SplashViewController")
+            return
+        }
+        
+        window.rootViewController = splashVC
+        window.makeKeyAndVisible()
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
     }
 }
 extension UIColor {

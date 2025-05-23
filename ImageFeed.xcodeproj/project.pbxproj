@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		925323822DDCAC6400715AEA /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925323812DDCAC6400715AEA /* WebKit.framework */; };
+		92B7A1A82DDFB02B004336B1 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 925323812DDCAC6400715AEA /* WebKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,7 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				925323822DDCAC6400715AEA /* WebKit.framework in Frameworks */,
+				92B7A1A82DDFB02B004336B1 /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

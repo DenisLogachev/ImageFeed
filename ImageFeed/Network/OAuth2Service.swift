@@ -42,7 +42,6 @@ final class OAuth2Service {
             completion(.failure(NetworkError.invalidRequest))
             return
         }
-        request.httpBody = bodyString.data(using: .utf8)
         
         task = session.data(for: request) { [weak self] result in
             guard let self = self else { return }

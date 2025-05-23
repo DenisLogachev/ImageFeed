@@ -5,30 +5,37 @@ extension URLSession {
         for request: URLRequest,
         completion: @escaping (Result<Data, Error>) -> Void
     ) -> URLSessionTask {
-        let fulfillCompletionOnMainThread: (Result<Data, Error>) -> Void = { result in
-            DispatchQueue.main.async {
-                completion(result)
-            }
-        }
-        
         let task = dataTask(with: request) { data, response, error in
-            if let data = data,
-               let response = response as? HTTPURLResponse {
-                if (200..<300).contains(response.statusCode) {
-                    fulfillCompletionOnMainThread(.success(data))
-                } else {
-                    print("Error: HTTP status code \(response.statusCode)")
-                    fulfillCompletionOnMainThread(.failure(NetworkError.httpStatusCode(response.statusCode)))
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("Error: URL request failed - \(error.localizedDescription)")
+                    completion(.failure(NetworkError.urlRequestError(error)))
+                    return
                 }
-            } else if let error = error {
-                print("Error: URL request failed - \(error.localizedDescription)")
-                fulfillCompletionOnMainThread(.failure(NetworkError.urlRequestError(error)))
-            } else {
-                print("Error: Unknown URL session error")
-                fulfillCompletionOnMainThread(.failure(NetworkError.urlSessionError))
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    print("Error: Unknown URL session error (no HTTP response)")
+                    completion(.failure(NetworkError.urlSessionError))
+                    return
+                }
+                
+                guard let data = data else {
+                    print("Error: Response has no data")
+                    completion(.failure(NetworkError.emptyResponseData))
+                    return
+                }
+                
+                (200..<300).contains(httpResponse.statusCode)
+                ? completion(.success(data))
+                : {
+                    print("Error: HTTP status code \(httpResponse.statusCode)")
+                    completion(.failure(NetworkError.httpStatusCode(httpResponse.statusCode)))
+                }()
             }
         }
         
+        task.resume()
         return task
     }
 }
+

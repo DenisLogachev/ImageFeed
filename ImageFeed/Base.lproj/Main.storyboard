@@ -5,14 +5,13 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Auth View Controller-->
         <scene sceneID="Pyj-Oc-tTl">
             <objects>
-                <viewController id="Eqf-Ao-8Q4" userLabel="Auth View Controller" customClass="AuthViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AuthNavigationController" id="Eqf-Ao-8Q4" userLabel="Auth View Controller" customClass="AuthViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="AgD-ku-jFP">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -71,40 +70,54 @@
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2ZY-UE-BqY">
-                                <rect key="frame" x="0.0" y="62" width="440" height="860"/>
+                            <wkWebView contentMode="scaleToFill" allowsBackForwardNavigationGestures="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pa2-io-8jc">
+                                <rect key="frame" x="0.0" y="106" width="440" height="850"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ejh-d9-pkc">
+                                <rect key="frame" x="0.0" y="62" width="64" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="acU-Wy-vS6"/>
+                                    <constraint firstAttribute="width" constant="64" id="gMx-jf-5Ai"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="nav_back_button"/>
+                                <connections>
+                                    <action selector="didTapBackButton:" destination="lfJ-zQ-TGU" eventType="touchUpInside" id="b8G-mc-B1O"/>
+                                </connections>
+                            </button>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="iit-su-hRi">
-                                <rect key="frame" x="0.0" y="62" width="440" height="4"/>
+                                <rect key="frame" x="0.0" y="102" width="440" height="4"/>
                                 <color key="tintColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="0.84705882352941175" colorSpace="calibratedRGB"/>
                             </progressView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="mMY-IA-Zsa"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="mMY-IA-Zsa" firstAttribute="trailing" secondItem="2ZY-UE-BqY" secondAttribute="trailing" id="KoH-v9-KzR"/>
-                            <constraint firstItem="2ZY-UE-BqY" firstAttribute="leading" secondItem="mMY-IA-Zsa" secondAttribute="leading" id="Leb-9i-QrJ"/>
+                            <constraint firstItem="mMY-IA-Zsa" firstAttribute="top" secondItem="ejh-d9-pkc" secondAttribute="top" id="0f5-Dg-QHs"/>
+                            <constraint firstAttribute="trailing" secondItem="pa2-io-8jc" secondAttribute="trailing" id="A9h-fU-oTl"/>
                             <constraint firstItem="mMY-IA-Zsa" firstAttribute="trailing" secondItem="iit-su-hRi" secondAttribute="trailing" id="NvI-FP-ixS"/>
-                            <constraint firstItem="iit-su-hRi" firstAttribute="top" secondItem="mMY-IA-Zsa" secondAttribute="top" id="Uz5-u4-ShM"/>
+                            <constraint firstItem="iit-su-hRi" firstAttribute="top" secondItem="mMY-IA-Zsa" secondAttribute="top" constant="40" id="Uz5-u4-ShM"/>
+                            <constraint firstItem="pa2-io-8jc" firstAttribute="bottom" secondItem="xQJ-MF-qWb" secondAttribute="bottom" id="ViK-HB-yza"/>
                             <constraint firstItem="iit-su-hRi" firstAttribute="leading" secondItem="mMY-IA-Zsa" secondAttribute="leading" id="lp6-SF-hHi"/>
-                            <constraint firstItem="2ZY-UE-BqY" firstAttribute="top" secondItem="mMY-IA-Zsa" secondAttribute="top" id="pXL-qU-5UD"/>
-                            <constraint firstItem="mMY-IA-Zsa" firstAttribute="bottom" secondItem="2ZY-UE-BqY" secondAttribute="bottom" id="vb6-fQ-i92"/>
+                            <constraint firstItem="pa2-io-8jc" firstAttribute="leading" secondItem="xQJ-MF-qWb" secondAttribute="leading" id="qmS-S7-S7g"/>
+                            <constraint firstItem="pa2-io-8jc" firstAttribute="top" secondItem="ejh-d9-pkc" secondAttribute="bottom" id="yzP-NS-IaC"/>
+                            <constraint firstItem="ejh-d9-pkc" firstAttribute="leading" secondItem="mMY-IA-Zsa" secondAttribute="leading" id="zLQ-Ff-vdc"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="onp-Du-jm0"/>
                     <connections>
-                        <outlet property="progressView" destination="iit-su-hRi" id="mN1-gp-aLp"/>
-                        <outlet property="webView" destination="2ZY-UE-BqY" id="nw2-TD-IoP"/>
+                        <outlet property="backButton" destination="ejh-d9-pkc" id="wHp-EV-m3K"/>
+                        <outlet property="progressView" destination="iit-su-hRi" id="Ysg-6x-bBd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gNS-J2-qgU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1335" y="-1086"/>
+            <point key="canvasLocation" x="-1335" y="-1086.4016736401675"/>
         </scene>
         <!--Single Image View Controller-->
         <scene sceneID="vpT-R3-NtW">
@@ -285,7 +298,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="Q4p-iv-qXc">
             <objects>
-                <tabBarController storyboardIdentifier="TabBarViewController" id="cjM-TJ-IOZ" customClass="TabBarController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="TabBarViewController" id="cjM-TJ-IOZ" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="6n6-SX-tTo">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -342,7 +355,7 @@
         <!--Unsplash-->
         <scene sceneID="6c5-m4-tfl">
             <objects>
-                <viewController id="hTE-ii-W1U" userLabel="Unsplash" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SplashViewController" id="hTE-ii-W1U" userLabel="Unsplash" customClass="SplashViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="KX7-L2-5lE">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -372,13 +385,11 @@
         <image name="0" width="1600" height="1059"/>
         <image name="auth_screen_logo" width="60" height="60"/>
         <image name="like_button_on" width="42" height="42"/>
+        <image name="nav_back_button" width="24" height="24"/>
         <image name="nav_back_button_white" width="24" height="24"/>
         <image name="share_button" width="50" height="50"/>
         <image name="splash_screen_logo" width="72.666664123535156" height="75.333335876464844"/>
         <image name="tab_editorial_active" width="30" height="30"/>
         <image name="tab_profile_active" width="30" height="30"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
     </resources>
 </document>

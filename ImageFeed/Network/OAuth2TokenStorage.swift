@@ -8,7 +8,12 @@ final class OAuth2TokenStorage {
             UserDefaults.standard.string(forKey: tokenKey)
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: tokenKey)
+            if let value = newValue {
+                UserDefaults.standard.set(newValue, forKey: tokenKey)
+            }
+            else {
+                UserDefaults.standard.removeObject(forKey: tokenKey)
+            }
         }
     }
 }
