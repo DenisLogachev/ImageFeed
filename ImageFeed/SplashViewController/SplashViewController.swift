@@ -6,7 +6,7 @@ final class SplashViewController: UIViewController {
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     
     private let oauth2Service = OAuth2Service.shared
-    private let oauth2TokenStorage = OAuth2TokenStorage()
+    private let oauth2TokenStorage = OAuth2TokenStorage.shared
     
     // MARK: - Lifecycle
     override func viewDidAppear(_ animated: Bool) {
@@ -27,7 +27,20 @@ final class SplashViewController: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
     }
-    
+    // MARK: - Navigation
+    private func fetchProfileAndProceed() {
+        ProfileService.shared.fetchProfile { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self?.switchToTabBarController()
+                case .failure(let error):
+                    print("Failed to fetch profile: \(error)")
+                }
+            }
+        }
+    }
+        
     private func switchToTabBarController() {
         guard let window = UIApplication.shared.windows.first else {  print("Error: Failed to get window")
             return}
@@ -37,9 +50,10 @@ final class SplashViewController: UIViewController {
             return
         }
         window.rootViewController = tabBarController
+        window.makeKeyAndVisible()
     }
 }
-
+// MARK: - Segue to Auth
 extension SplashViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showAuthenticationScreenSegueIdentifier {
@@ -56,7 +70,7 @@ extension SplashViewController {
         }
     }
 }
-
+// MARK: - Auth Delegate
 extension SplashViewController: AuthViewControllerDelegate {
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
         dismiss(animated: true) {
