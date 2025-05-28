@@ -3,20 +3,25 @@ import UIKit
 final class SplashViewController: UIViewController {
     
     // MARK: - Private properties
-    private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
-    
     private let oauth2Service = OAuth2Service.shared
     private let oauth2TokenStorage = OAuth2TokenStorage.shared
     
     // MARK: - Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            self.showAuthScreen()
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if let token = oauth2TokenStorage.token {
-            switchToTabBarController()
+        if let _ = oauth2TokenStorage.token {
+            fetchProfileAndProceed()
         } else {
-            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
+            showAuthScreen()
         }
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -27,20 +32,35 @@ final class SplashViewController: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
     }
-    // MARK: - Navigation
-    private func fetchProfileAndProceed() {
-        ProfileService.shared.fetchProfile { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    self?.switchToTabBarController()
-                case .failure(let error):
-                    print("Failed to fetch profile: \(error)")
-                }
-            }
-        }
-    }
+    
+    // MARK: - UI Setup
+    private func setupUI() {
+        view.backgroundColor = UIColor(named: "BackgroundPrimary")
         
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "splash_screen_logo")
+        imageView.contentMode = .scaleAspectFit
+        
+        view.addSubview(imageView)
+        
+        NSLayoutConstraint.activate([
+            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
+    // MARK: - Navigation
+    private func showAuthScreen() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let authVC = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else {
+            return
+        }
+        authVC.modalPresentationStyle = .fullScreen
+        authVC.delegate = self
+        present(authVC, animated: true, completion: nil)
+    }
+    
     private func switchToTabBarController() {
         guard let window = UIApplication.shared.windows.first else {  print("Error: Failed to get window")
             return}
@@ -52,42 +72,35 @@ final class SplashViewController: UIViewController {
         window.rootViewController = tabBarController
         window.makeKeyAndVisible()
     }
-}
-// MARK: - Segue to Auth
-extension SplashViewController {
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showAuthenticationScreenSegueIdentifier {
-            guard
-                let navigationController = segue.destination as? UINavigationController,
-                let viewController = navigationController.viewControllers.first as? AuthViewController
-            else {
-                print("Error: Failed to prepare for \(showAuthenticationScreenSegueIdentifier)")
-                return
+    
+    // MARK: - Profile + Avatar loading
+    private func fetchProfileAndProceed() {
+        ProfileService.shared.fetchProfile { [weak self] result in
+            switch result {
+            case .success(let profile):
+                ProfileImageService.shared.fetchProfileImageURL(username: profile.username) { imageResult in
+                    switch imageResult {
+                    case .success(let url):
+                        ProfileService.shared.updateAvatarURL(url)
+                    case .failure(let error):
+                        print("[SplashViewController]: Failed to fetch avatar URL: \(error.localizedDescription)")
+                    }
+                    DispatchQueue.main.async {
+                        self?.switchToTabBarController()
+                    }
+                }
+            case .failure(let error):
+                print("[SplashViewController]: Failed to fetch profile: \(error.localizedDescription)")
             }
-            viewController.delegate = self
-        } else {
-            super.prepare(for: segue, sender: sender)
         }
     }
 }
+
 // MARK: - Auth Delegate
 extension SplashViewController: AuthViewControllerDelegate {
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
         dismiss(animated: true) {
-            self.fetchOAuthToken(code)
-        }
-    }
-    
-    private func fetchOAuthToken(_ code: String) {
-        oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success:
-                self.switchToTabBarController()
-            case .failure(let error):
-                print("Error: Failed to fetch OAuth token - \(error.localizedDescription)")
-                // TODO [Sprint 11]
-            }
+            self.fetchProfileAndProceed()
         }
     }
 }

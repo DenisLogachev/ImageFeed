@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     private var nameLabel: UILabel?
@@ -24,10 +25,13 @@ final class ProfileViewController: UIViewController {
             guard let self = self else { return }
             self.updateAvatar()
         }
-        
-        updateAvatar()
     }
-    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let avatarImageView {
+            avatarImageView.layer.cornerRadius = avatarImageView.frame.width / 2
+        }
+    }
     private func setupUI() {
         setupAvatarImageView()
         setupNameLabel()
@@ -37,10 +41,10 @@ final class ProfileViewController: UIViewController {
         setupConstraints()
     }
     
-    // Аватар
+    // Avatar
     private func setupAvatarImageView() {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "avatar")
+        imageView.image = placeholderAvatarImage()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -126,15 +130,30 @@ final class ProfileViewController: UIViewController {
         nameLabel?.text = profile.name
         loginNameLabel?.text = profile.loginName
         descriptionLabel?.text = profile.bio
-        avatarImageView?.loadImage(from: profile.profileImageURL)
+        updateAvatar()
     }
     
     private func updateAvatar() {
         guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let profileImageURL = ProfileService.shared.profile?.profileImageURL,
             let url = URL(string: profileImageURL)
-        else { return }
-        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+        else {
+            avatarImageView?.image = placeholderAvatarImage()
+            return }
+        avatarImageView?.kf.setImage(
+            with: url,
+            placeholder: placeholderAvatarImage(),
+            options: [
+                .transition(.fade(0.3)),
+                .cacheOriginalImage
+            ]
+        )
+    }
+    
+    private func placeholderAvatarImage() -> UIImage? {
+        let config = UIImage.SymbolConfiguration(pointSize: 70, weight: .regular)
+        let image = UIImage(systemName: "person.crop.circle.fill", withConfiguration: config)
+        return image?.withTintColor(UIColor(named: "TextSecondary") ?? .gray, renderingMode: .alwaysOriginal)
     }
     
     deinit {

@@ -22,6 +22,11 @@ final class ProfileImageService {
     }
     
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
+        if let cachedURL = avatarURL {
+                   completion(.success(cachedURL))
+                   return
+               }
+        
         task?.cancel()
         
         guard let token = OAuth2TokenStorage.shared.token else {

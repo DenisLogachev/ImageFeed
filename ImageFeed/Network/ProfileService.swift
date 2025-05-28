@@ -5,7 +5,7 @@ struct Profile {
     let name: String
     let loginName: String
     let bio: String?
-    let profileImageURL: String
+    var profileImageURL: String
 }
 
 private struct ProfileResult: Codable {
@@ -62,6 +62,15 @@ final class ProfileService {
         }
         
         profileTask?.resume()
+    }
+    func updateAvatarURL(_ url: String) {
+        guard var currentProfile = profile else {
+            print("[ProfileService.updateAvatarURL]: No profile to update")
+            return
+        }
+        currentProfile.profileImageURL = url
+        profile = currentProfile
+        print("[ProfileService.updateAvatarURL]: Avatar URL updated")
     }
     
     func makeMeRequest() -> URLRequest? {
