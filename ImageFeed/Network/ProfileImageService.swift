@@ -23,9 +23,9 @@ final class ProfileImageService {
     
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         if let cachedURL = avatarURL {
-                   completion(.success(cachedURL))
-                   return
-               }
+            completion(.success(cachedURL))
+            return
+        }
         
         task?.cancel()
         
@@ -34,11 +34,7 @@ final class ProfileImageService {
             completion(.failure(NetworkError.noToken))
             return
         }
-        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
-            print("[ProfileImageService.fetchProfileImageURL]: NetworkError.invalidURL - Invalid URL for username: \(username)")
-            completion(.failure(NetworkError.invalidURL))
-            return
-        }
+        let url = Constants.defaultBaseURL.appendingPathComponent("users/\(username)")
         
         var request = URLRequest(url:url)
         request.httpMethod = "GET"
