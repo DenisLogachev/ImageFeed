@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     private var nameLabel: UILabel?
@@ -6,13 +7,31 @@ final class ProfileViewController: UIViewController {
     private var descriptionLabel: UILabel?
     private var avatarImageView: UIImageView?
     private var logoutButton: UIButton?
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "BackgroundPrimary")
         setupUI()
+        
+        if let profile = ProfileService.shared.profile {
+            updateUI(with: profile)
+        }
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            self.updateAvatar()
+        }
     }
-    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let avatarImageView {
+            avatarImageView.layer.cornerRadius = avatarImageView.frame.width / 2
+        }
+    }
     private func setupUI() {
         setupAvatarImageView()
         setupNameLabel()
@@ -22,10 +41,10 @@ final class ProfileViewController: UIViewController {
         setupConstraints()
     }
     
-    // Аватар
+    // Avatar
     private func setupAvatarImageView() {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "avatar")
+        imageView.image = placeholderAvatarImage()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -107,10 +126,46 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
+    private func updateUI(with profile: Profile) {
+        nameLabel?.text = profile.name
+        loginNameLabel?.text = profile.loginName
+        descriptionLabel?.text = profile.bio
+        updateAvatar()
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileService.shared.profile?.profileImageURL,
+            let url = URL(string: profileImageURL)
+        else {
+            avatarImageView?.image = placeholderAvatarImage()
+            return }
+        avatarImageView?.kf.setImage(
+            with: url,
+            placeholder: placeholderAvatarImage(),
+            options: [
+                .transition(.fade(0.3)),
+                .cacheOriginalImage
+            ]
+        )
+    }
+    
+    private func placeholderAvatarImage() -> UIImage? {
+        let config = UIImage.SymbolConfiguration(pointSize: 70, weight: .regular)
+        let image = UIImage(systemName: "person.crop.circle.fill", withConfiguration: config)
+        return image?.withTintColor(UIColor(named: "TextSecondary") ?? .gray, renderingMode: .alwaysOriginal)
+    }
+    
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+    
     @objc
     private func didTapLogoutButton() {
         print ("Logout tapped")
-        OAuth2TokenStorage().token = nil
+        OAuth2TokenStorage.shared.token = nil
         switchToSplash()
     }
     
@@ -131,21 +186,5 @@ final class ProfileViewController: UIViewController {
         UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
     }
 }
-extension UIColor {
-    convenience init(hex: String) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        if hexSanitized.hasPrefix("#") {
-            hexSanitized.remove(at: hexSanitized.startIndex)
-        }
-        
-        var rgb: UInt64 = 0
-        Scanner(string: hexSanitized).scanHexInt64(&rgb)
-        
-        let r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
-        let g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
-        let b = CGFloat(rgb & 0x0000FF) / 255.0
-        
-        self.init(red: r, green: g, blue: b, alpha: 1.0)
-    }
-}
+
 

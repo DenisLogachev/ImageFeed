@@ -1,4 +1,5 @@
 import UIKit
+import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
@@ -11,6 +12,13 @@ final class AuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackButton()
+    }
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if identifier == showWebViewSegueIdentifier && UIBlockingProgressHUD.isShowing {
+            return false
+        }
+        return true
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -37,19 +45,27 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        UIBlockingProgressHUD.show()
         OAuth2Service.shared.fetchOAuthToken(code: code) { [weak self] result in
             guard let self = self else { return }
-            switch result {
-            case .success(let token):
-                print("Token received: \(token)")
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                UIBlockingProgressHUD.dismiss()
+                switch result {
+                case .success(let token):
+                    print("Token received: \(token)")
                     self.delegate?.authViewController(self, didAuthenticateWithCode: code)
-                    vc.dismiss(animated: true)
+                case .failure(let error):
+                    print("Failed to fetch token: \(error)")
+                    self.showAlert(message: "Не удалось войти в систему")
                 }
-            case .failure(let error):
-                print("Failed to fetch token: \(error)")
             }
         }
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "Что-то пошло не так(", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "ОК", style: .default))
+        present(alert, animated: true)
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {

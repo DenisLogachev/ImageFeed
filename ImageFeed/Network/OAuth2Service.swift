@@ -8,14 +8,21 @@ final class OAuth2Service {
     private var lastCode: String?
     private init() {}
     
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        if lastCode == code { return }
-        task?.cancel()
+        if let currentTask = task {
+            if lastCode == code {
+                currentTask.cancel()
+            } else {
+                completion(.failure(NetworkError.anotherRequestInProgress))
+                return
+            }
+        }
+        
         lastCode = code
         guard let url = URL(string: Constants.unsplashTokenURL.absoluteString) else {
-            print("Error: Invalid token URL")
+            print("[OAuth2Service.fetchOAuthToken]: NetworkError.invalidURL - Invalid token URL")
             completion(.failure(NetworkError.invalidURL))
             return
         }
@@ -35,32 +42,28 @@ final class OAuth2Service {
         let bodyString = parameters
             .map { "\($0.key)=\($0.value)" }
             .joined(separator: "&")
-        if let bodyData = bodyString.data(using: .utf8) {
-            request.httpBody = bodyData
-        } else {
-            print("Error: Failed to create request body")
+        
+        guard let bodyData = bodyString.data(using: .utf8) else {
+            print("[OAuth2Service.fetchOAuthToken]: NetworkError.invalidRequest - Failed to create request body")
             completion(.failure(NetworkError.invalidRequest))
             return
         }
+        request.httpBody = bodyData
         
-        task = session.data(for: request) { [weak self] result in
+        task = session.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             guard let self = self else { return }
             
+            self.task = nil
+            self.lastCode = nil
+            
             switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    self.storage.token = response.accessToken
-                    completion(.success(response.accessToken))
-                } catch {
-                    print("Decoding error: \(error)")
-                    print("Response data: \(String(data: data, encoding: .utf8) ?? "")")
-                    completion(.failure(error))
-                }
+            case .success(let response):
+                self.storage.token = response.accessToken
+                completion(.success(response.accessToken))
                 
             case .failure(let error):
-                print("Network error: \(error)")
+                print("[OAuth2Service.fetchOAuthToken]: NetworkError - \(error.localizedDescription), code: \(code)")
+                completion(.failure(error))
                 completion(.failure(error))
             }
         }
