@@ -8,6 +8,12 @@ final class UIBlockingProgressHUD {
     
     private static var isVisible = false
     
+    static func configure() {
+        ProgressHUD.animationType = .activityIndicator
+        ProgressHUD.colorHUD = .white
+        ProgressHUD.colorAnimation = .black
+    }
+    
     static func show() {
         guard !isVisible else { return }
         isVisible = true

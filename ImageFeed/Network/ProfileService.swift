@@ -8,7 +8,7 @@ final class ProfileService {
     private var profileTask: URLSessionTask?
     
     private(set) var profile: Profile?
-    
+
     func fetchProfile(completion: @escaping (Result<Profile, Error>) -> Void) {
         profileTask?.cancel()
         
@@ -63,5 +63,10 @@ final class ProfileService {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
     }
+    
+    func clearProfile() {
+        profile = nil
+    }
+    
 }
 

@@ -163,11 +163,26 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc
-    private func didTapLogoutButton() {
-        print ("Logout tapped")
-        OAuth2TokenStorage.shared.token = nil
-        switchToSplash()
+    private func didTapLogoutButton(_ sender: Any?) {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        let cancelAction = UIAlertAction(title: "Нет", style: .cancel)
+        let confirmAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            ProfileLogoutService.shared.logout()
+            self.switchToSplash()
+        }
+        
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+        
+        present(alert, animated: true)
     }
+    
     
     private func switchToSplash() {
         guard let window = UIApplication.shared.windows.first else {
