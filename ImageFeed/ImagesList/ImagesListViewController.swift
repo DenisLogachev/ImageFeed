@@ -13,7 +13,6 @@ final class ImagesListViewController: UIViewController {
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ru_RU")
         formatter.dateStyle = .long
         formatter.timeStyle = .none
         self.dateFormatter = formatter
@@ -22,7 +21,6 @@ final class ImagesListViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ru_RU")
         formatter.dateStyle = .long
         formatter.timeStyle = .none
         self.dateFormatter = formatter

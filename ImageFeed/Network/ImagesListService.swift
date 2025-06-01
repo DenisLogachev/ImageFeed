@@ -46,15 +46,7 @@ final class ImagesListService {
             switch result {
             case .success(let photoResults):
                 let photoResults = photoResults.map { photoResult in
-                    Photo(
-                        id: photoResult.id,
-                        size: CGSize(width: photoResult.width, height: photoResult.height),
-                        createdAt: photoResult.createdAt.flatMap { self.dateFormatter.date(from: $0) },
-                        welcomeDescription: photoResult.description,
-                        thumbImageURL: photoResult.urls.thumb,
-                        fullImageURL: photoResult.urls.full,
-                        isLiked: photoResult.likedByUser
-                    )
+                    Photo(from: photoResult, dateFormatter: self.dateFormatter)
                 }
                 DispatchQueue.main.async {
                     let existingIds = Set(self.photos.map { $0.id })
@@ -99,15 +91,7 @@ final class ImagesListService {
                 DispatchQueue.main.async {
                     if let index = self.photos.firstIndex(where: { $0.id == photoResult.id }) {
                         let oldPhoto = self.photos[index]
-                        let newPhoto = Photo(
-                            id: oldPhoto.id,
-                            size: oldPhoto.size,
-                            createdAt: oldPhoto.createdAt,
-                            welcomeDescription: oldPhoto.welcomeDescription,
-                            thumbImageURL: oldPhoto.thumbImageURL,
-                            fullImageURL: oldPhoto.fullImageURL,
-                            isLiked: !oldPhoto.isLiked
-                        )
+                        let newPhoto = Photo(from: photoResult, dateFormatter: self.dateFormatter)
                         self.photos = self.photos.withReplaced(safe: index, newValue: newPhoto)
                         NotificationCenter.default.post(
                             name: ImagesListService.didChangeNotification,

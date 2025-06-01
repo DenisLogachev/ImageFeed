@@ -174,12 +174,31 @@ final class ProfileViewController: UIViewController {
         let confirmAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
             guard let self = self else { return }
             ProfileLogoutService.shared.logout()
+            self.switchToSplash()
         }
         
         alert.addAction(cancelAction)
         alert.addAction(confirmAction)
         
         present(alert, animated: true)
+    }
+    
+    
+    private func switchToSplash() {
+        guard let window = UIApplication.shared.windows.first else {
+            print("Error: No window")
+            return
+        }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+        guard let splashVC = storyboard.instantiateViewController(withIdentifier: "SplashViewController") as? SplashViewController else {
+            print("Error: Cannot instantiate SplashViewController")
+            return
+        }
+        
+        window.rootViewController = splashVC
+        window.makeKeyAndVisible()
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
     }
 }
 

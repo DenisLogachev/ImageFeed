@@ -10,7 +10,6 @@ final class ProfileLogoutService {
         cleanCookies()
         cleanToken()
         cleanProfileData()
-        switchToSplash()
     }
     
     private func cleanCookies() {
@@ -30,22 +29,5 @@ final class ProfileLogoutService {
         ProfileService.shared.clearProfile()
         ProfileImageService.shared.clearAvatarURL()
         ImagesListService.shared.clearPhotosList()
-    }
-    
-    private func switchToSplash() {
-        guard let window = UIApplication.shared.windows.first else {
-            print("Error: No window")
-            return
-        }
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        guard let splashVC = storyboard.instantiateViewController(withIdentifier: "SplashViewController") as? SplashViewController else {
-            print("Error: Cannot instantiate SplashViewController")
-            return
-        }
-        
-        window.rootViewController = splashVC
-        window.makeKeyAndVisible()
-        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
     }
 }

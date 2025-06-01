@@ -29,7 +29,7 @@ final class ImagesListCell: UITableViewCell {
         return button
     }()
     
-    private let gradientView: UIView = {
+    private lazy var gradientView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -120,7 +120,7 @@ final class ImagesListCell: UITableViewCell {
             cellImageView.image = placeholderImage
         }
         
-        dateLabel.text = photo.createdAt.map { dateFormatter.string(from: $0) } ?? "Дата неизвестна"
+        dateLabel.text = photo.createdAt.map { dateFormatter.string(from: $0) } ?? ""
         
         let likeImageName = photo.isLiked ? "like_button_on" : "like_button_off"
         likeButton.setImage(UIImage(named: likeImageName), for: .normal)
