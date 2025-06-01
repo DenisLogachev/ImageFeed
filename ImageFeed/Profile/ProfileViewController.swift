@@ -163,27 +163,23 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc
-    private func didTapLogoutButton() {
-        print ("Logout tapped")
-        OAuth2TokenStorage.shared.token = nil
-        switchToSplash()
-    }
-    
-    private func switchToSplash() {
-        guard let window = UIApplication.shared.windows.first else {
-            print("Error: No window")
-            return
+    private func didTapLogoutButton(_ sender: Any?) {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        let cancelAction = UIAlertAction(title: "Нет", style: .cancel)
+        let confirmAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            ProfileLogoutService.shared.logout()
         }
         
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        guard let splashVC = storyboard.instantiateViewController(withIdentifier: "SplashViewController") as? SplashViewController else {
-            print("Error: Cannot instantiate SplashViewController")
-            return
-        }
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
         
-        window.rootViewController = splashVC
-        window.makeKeyAndVisible()
-        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
+        present(alert, animated: true)
     }
 }
 

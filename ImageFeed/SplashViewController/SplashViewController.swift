@@ -10,9 +10,6 @@ final class SplashViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.showAuthScreen()
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
