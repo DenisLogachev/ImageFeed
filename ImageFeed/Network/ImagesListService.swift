@@ -1,4 +1,12 @@
 import Foundation
+import UIKit
+
+protocol ImagesListServiceProtocol: AnyObject {
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void)
+    func clearPhotosList()
+}
 
 final class ImagesListService {
     static let shared = ImagesListService()
@@ -8,7 +16,7 @@ final class ImagesListService {
     private var task: URLSessionTask?
     private var likeTask: URLSessionTask?
     private var lastLoadedPage: Int?
-    private var photos: [Photo] = []
+    private var _photos: [Photo] = []
     
     private let dateFormatter: ISO8601DateFormatter
     
@@ -17,8 +25,8 @@ final class ImagesListService {
         self.dateFormatter = formatter
     }
     
-    var photosList: [Photo] {
-        return photos
+    var photos: [Photo] {
+        return _photos
     }
     
     func fetchPhotosNextPage() {
@@ -53,7 +61,7 @@ final class ImagesListService {
                     let uniqueNewPhotos = photoResults.filter { !existingIds.contains($0.id) }
                     
                     if !uniqueNewPhotos.isEmpty {
-                        self.photos.append(contentsOf: uniqueNewPhotos)
+                        self._photos.append(contentsOf: uniqueNewPhotos)
                         self.lastLoadedPage = nextPage
                         
                         NotificationCenter.default.post(
@@ -92,7 +100,7 @@ final class ImagesListService {
                     if let index = self.photos.firstIndex(where: { $0.id == photoResult.id }) {
                         let oldPhoto = self.photos[index]
                         let newPhoto = Photo(from: photoResult, dateFormatter: self.dateFormatter)
-                        self.photos = self.photos.withReplaced(safe: index, newValue: newPhoto)
+                        self._photos = self.photos.withReplaced(safe: index, newValue: newPhoto)
                         NotificationCenter.default.post(
                             name: ImagesListService.didChangeNotification,
                             object: self,
@@ -113,7 +121,7 @@ final class ImagesListService {
     }
     
     func clearPhotosList() {
-        photos = []
+        _photos = []
         lastLoadedPage = nil
         NotificationCenter.default.post(
             name: ImagesListService.didChangeNotification,
@@ -122,3 +130,7 @@ final class ImagesListService {
         )
     }
 }
+
+extension ImagesListService: ImagesListServiceProtocol {
+}
+

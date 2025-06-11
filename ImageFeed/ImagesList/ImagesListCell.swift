@@ -32,6 +32,7 @@ final class ImagesListCell: UITableViewCell {
     private lazy var gradientView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.isUserInteractionEnabled = false
         return view
     }()
     
@@ -101,8 +102,7 @@ final class ImagesListCell: UITableViewCell {
     
     private func setupAccessibility() {
         cellImageView.isAccessibilityElement = true
-        cellImageView.accessibilityLabel = "Photo"
-        likeButton.accessibilityLabel = "Like button"
+        cellImageView.accessibilityIdentifier = "CellImageView"
     }
     
     // MARK: - Configuration
@@ -121,9 +121,8 @@ final class ImagesListCell: UITableViewCell {
         }
         
         dateLabel.text = photo.createdAt.map { dateFormatter.string(from: $0) } ?? ""
-        
-        let likeImageName = photo.isLiked ? "like_button_on" : "like_button_off"
-        likeButton.setImage(UIImage(named: likeImageName), for: .normal)
+
+        setIsLiked(photo.isLiked)
     }
     
     // MARK: - Reuse
@@ -149,5 +148,6 @@ final class ImagesListCell: UITableViewCell {
     func setIsLiked(_ isLiked: Bool) {
         let likeImageName = isLiked ? "like_button_on" : "like_button_off"
         likeButton.setImage(UIImage(named: likeImageName), for: .normal)
+        likeButton.accessibilityIdentifier = isLiked ? "like button on" : "like button off"
     }
 }

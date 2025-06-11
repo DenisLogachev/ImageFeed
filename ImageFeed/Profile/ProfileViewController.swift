@@ -1,37 +1,106 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
-    private var nameLabel: UILabel?
-    private var loginNameLabel: UILabel?
-    private var descriptionLabel: UILabel?
-    private var avatarImageView: UIImageView?
-    private var logoutButton: UIButton?
-    private var profileImageServiceObserver: NSObjectProtocol?
+final class ProfileViewController: UIViewController, ProfileViewProtocol {
+    private var presenter: ProfilePresenterProtocol?
+    
+    var nameLabel: UILabel?
+    var loginNameLabel: UILabel?
+    var descriptionLabel: UILabel?
+    var avatarImageView: UIImageView?
+    var logoutButton: UIButton?
+    
+    func configure(_ presenter: ProfilePresenterProtocol) {
+        self.presenter = presenter
+        presenter.view = self
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "BackgroundPrimary")
         setupUI()
-        
-        if let profile = ProfileService.shared.profile {
-            updateUI(with: profile)
+        guard let presenter = presenter else {
+            assertionFailure("Presenter is nil")
+            return
         }
-        profileImageServiceObserver = NotificationCenter.default.addObserver(
-            forName: ProfileImageService.didChangeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            guard let self = self else { return }
-            self.updateAvatar()
-        }
+        presenter.viewDidLoad()
     }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if let avatarImageView {
             avatarImageView.layer.cornerRadius = avatarImageView.frame.width / 2
         }
     }
+    
+    
+    // MARK: - ProfileViewProtocol
+    func displayProfile(name: String, loginName: String, bio: String) {
+        nameLabel?.text = name
+        loginNameLabel?.text = loginName
+        descriptionLabel?.text = bio
+    }
+    
+    func displayAvatar(url: URL?) {
+        if let url = url {
+            avatarImageView?.kf.setImage(
+                with: url,
+                placeholder: placeholderAvatarImage(),
+                options: [
+                    .transition(.fade(0.3)),
+                    .cacheOriginalImage
+                ]
+            )
+        } else {
+            avatarImageView?.image = placeholderAvatarImage()
+        }
+    }
+    
+    
+    func showLogoutConfirmation() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        let cancelAction = UIAlertAction(title: "Нет", style: .cancel)
+        let confirmAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            guard let presenter = self?.presenter else { return }
+            presenter.logoutConfirmed()
+        }
+        confirmAction.accessibilityIdentifier = "Yes"
+        
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+        alert.view.accessibilityIdentifier = "LogoutAlert"
+        present(alert, animated: true)
+    }
+    
+    func switchToSplash() {
+        guard let window = UIApplication.shared.windows.first else {
+            print("Error: No window")
+            return
+        }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+        guard let splashVC = storyboard.instantiateViewController(withIdentifier: "SplashViewController") as? SplashViewController else {
+            print("Error: Cannot instantiate SplashViewController")
+            return
+        }
+        
+        window.rootViewController = splashVC
+        window.makeKeyAndVisible()
+        UIView.transition(
+            with: window,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: nil,
+            completion: nil
+        )
+    }
+    
+    // MARK: - UI Setup
     private func setupUI() {
         setupAvatarImageView()
         setupNameLabel()
@@ -48,6 +117,7 @@ final class ProfileViewController: UIViewController {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        imageView.accessibilityIdentifier = "ProfileAvatar"
         view.addSubview(imageView)
         avatarImageView = imageView
     }
@@ -59,6 +129,7 @@ final class ProfileViewController: UIViewController {
         label.textColor = UIColor(named: "TextPrimary")
         label.font = UIFont.boldSystemFont(ofSize: 23)
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "Name"
         view.addSubview(label)
         nameLabel = label
     }
@@ -70,6 +141,7 @@ final class ProfileViewController: UIViewController {
         label.textColor = UIColor(named: "TextSecondary")
         label.font = UIFont.systemFont(ofSize: 13)
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "Login"
         view.addSubview(label)
         loginNameLabel = label
     }
@@ -81,6 +153,7 @@ final class ProfileViewController: UIViewController {
         label.textColor = UIColor(named: "TextPrimary")
         label.font = UIFont.systemFont(ofSize: 13)
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "ProfileBio"
         view.addSubview(label)
         descriptionLabel = label
     }
@@ -91,6 +164,7 @@ final class ProfileViewController: UIViewController {
         button.setImage(UIImage(named: "logout_button"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
+        button.accessibilityIdentifier = "Logout"
         view.addSubview(button)
         logoutButton = button
     }
@@ -126,79 +200,19 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func updateUI(with profile: Profile) {
-        nameLabel?.text = profile.name
-        loginNameLabel?.text = profile.loginName
-        descriptionLabel?.text = profile.bio
-        updateAvatar()
-    }
-    
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileService.shared.profile?.profileImageURL,
-            let url = URL(string: profileImageURL)
-        else {
-            avatarImageView?.image = placeholderAvatarImage()
-            return }
-        avatarImageView?.kf.setImage(
-            with: url,
-            placeholder: placeholderAvatarImage(),
-            options: [
-                .transition(.fade(0.3)),
-                .cacheOriginalImage
-            ]
-        )
-    }
-    
     private func placeholderAvatarImage() -> UIImage? {
         let config = UIImage.SymbolConfiguration(pointSize: 70, weight: .regular)
         let image = UIImage(systemName: "person.crop.circle.fill", withConfiguration: config)
         return image?.withTintColor(UIColor(named: "TextSecondary") ?? .gray, renderingMode: .alwaysOriginal)
     }
     
-    deinit {
-        if let observer = profileImageServiceObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
-    }
-    
-    @objc
-    private func didTapLogoutButton(_ sender: Any?) {
-        let alert = UIAlertController(
-            title: "Пока, пока!",
-            message: "Уверены, что хотите выйти?",
-            preferredStyle: .alert
-        )
-        
-        let cancelAction = UIAlertAction(title: "Нет", style: .cancel)
-        let confirmAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            ProfileLogoutService.shared.logout()
-            self.switchToSplash()
-        }
-        
-        alert.addAction(cancelAction)
-        alert.addAction(confirmAction)
-        
-        present(alert, animated: true)
-    }
-    
-    
-    private func switchToSplash() {
-        guard let window = UIApplication.shared.windows.first else {
-            print("Error: No window")
+    // MARK: - Actions
+    @objc func didTapLogoutButton() {
+        guard let presenter = presenter else {
+            assertionFailure("Presenter is nil")
             return
         }
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        guard let splashVC = storyboard.instantiateViewController(withIdentifier: "SplashViewController") as? SplashViewController else {
-            print("Error: Cannot instantiate SplashViewController")
-            return
-        }
-        
-        window.rootViewController = splashVC
-        window.makeKeyAndVisible()
-        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
+        presenter.didTapLogoutButton()
     }
 }
 
