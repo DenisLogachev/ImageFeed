@@ -52,14 +52,14 @@ final class ProfileViewControllerTests: XCTestCase {
 
         sut.displayProfile(name: testName, loginName: testLogin, bio: testBio)
 
-        XCTAssertEqual(sut.nameLabel?.text, testName)
-        XCTAssertEqual(sut.loginNameLabel?.text, testLogin)
-        XCTAssertEqual(sut.descriptionLabel?.text, testBio)
+        XCTAssertEqual(sut.nameLabel.text, testName)
+        XCTAssertEqual(sut.loginNameLabel.text, testLogin)
+        XCTAssertEqual(sut.descriptionLabel.text, testBio)
     }
 
     func testDisplayAvatar_SetsPlaceholderWhenURLIsNil() {
         sut.displayAvatar(url: nil)
-        XCTAssertNotNil(sut.avatarImageView?.image)
+        XCTAssertNotNil(sut.avatarImageView.image)
     }
 
     func testLogoutButtonTap_CallsPresenterDidTapLogoutButton() {

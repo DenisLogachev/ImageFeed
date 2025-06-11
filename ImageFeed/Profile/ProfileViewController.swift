@@ -4,11 +4,59 @@ import Kingfisher
 final class ProfileViewController: UIViewController, ProfileViewProtocol {
     private var presenter: ProfilePresenterProtocol?
     
-    var nameLabel: UILabel?
-    var loginNameLabel: UILabel?
-    var descriptionLabel: UILabel?
-    var avatarImageView: UIImageView?
-    var logoutButton: UIButton?
+    lazy var nameLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Ирина Новикова"
+        label.textColor = UIColor(named: "TextPrimary")
+        label.font = UIFont.boldSystemFont(ofSize: 23)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "Name"
+        view.addSubview(label)
+        return label
+    }()
+    
+    lazy var loginNameLabel: UILabel = {
+        let label = UILabel()
+        label.text = "@ekaterina_nov"
+        label.textColor = UIColor(named: "TextSecondary")
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "Login"
+        view.addSubview(label)
+        return label
+    }()
+    
+    lazy var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Hello, World!"
+        label.textColor = UIColor(named: "TextPrimary")
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "ProfileBio"
+        view.addSubview(label)
+        return label
+    }()
+    
+    lazy var avatarImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = placeholderAvatarImage()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.accessibilityIdentifier = "ProfileAvatar"
+        view.addSubview(imageView)
+        return imageView
+    }()
+    
+    lazy var logoutButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "logout_button"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
+        button.accessibilityIdentifier = "Logout"
+        view.addSubview(button)
+        return button
+    }()
     
     func configure(_ presenter: ProfilePresenterProtocol) {
         self.presenter = presenter
@@ -28,22 +76,19 @@ final class ProfileViewController: UIViewController, ProfileViewProtocol {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if let avatarImageView {
-            avatarImageView.layer.cornerRadius = avatarImageView.frame.width / 2
-        }
+        avatarImageView.layer.cornerRadius = avatarImageView.frame.width / 2
     }
-    
     
     // MARK: - ProfileViewProtocol
     func displayProfile(name: String, loginName: String, bio: String) {
-        nameLabel?.text = name
-        loginNameLabel?.text = loginName
-        descriptionLabel?.text = bio
+        nameLabel.text = name
+        loginNameLabel.text = loginName
+        descriptionLabel.text = bio
     }
     
     func displayAvatar(url: URL?) {
         if let url = url {
-            avatarImageView?.kf.setImage(
+            avatarImageView.kf.setImage(
                 with: url,
                 placeholder: placeholderAvatarImage(),
                 options: [
@@ -52,7 +97,7 @@ final class ProfileViewController: UIViewController, ProfileViewProtocol {
                 ]
             )
         } else {
-            avatarImageView?.image = placeholderAvatarImage()
+            avatarImageView.image = placeholderAvatarImage()
         }
     }
     
@@ -102,81 +147,11 @@ final class ProfileViewController: UIViewController, ProfileViewProtocol {
     
     // MARK: - UI Setup
     private func setupUI() {
-        setupAvatarImageView()
-        setupNameLabel()
-        setupLoginNameLabel()
-        setupDescriptionLabel()
-        setupLogoutButton()
+        _ = [avatarImageView, nameLabel, loginNameLabel, descriptionLabel, logoutButton]
         setupConstraints()
     }
     
-    // Avatar
-    private func setupAvatarImageView() {
-        let imageView = UIImageView()
-        imageView.image = placeholderAvatarImage()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.accessibilityIdentifier = "ProfileAvatar"
-        view.addSubview(imageView)
-        avatarImageView = imageView
-    }
-    
-    // Name Label
-    private func setupNameLabel() {
-        let label = UILabel()
-        label.text = "Ирина Новикова"
-        label.textColor = UIColor(named: "TextPrimary")
-        label.font = UIFont.boldSystemFont(ofSize: 23)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.accessibilityIdentifier = "Name"
-        view.addSubview(label)
-        nameLabel = label
-    }
-    
-    // Login Name Label
-    private func setupLoginNameLabel() {
-        let label = UILabel()
-        label.text = "@ekaterina_nov"
-        label.textColor = UIColor(named: "TextSecondary")
-        label.font = UIFont.systemFont(ofSize: 13)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.accessibilityIdentifier = "Login"
-        view.addSubview(label)
-        loginNameLabel = label
-    }
-    
-    // Description Label
-    private func setupDescriptionLabel() {
-        let label = UILabel()
-        label.text = "Hello, World!"
-        label.textColor = UIColor(named: "TextPrimary")
-        label.font = UIFont.systemFont(ofSize: 13)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.accessibilityIdentifier = "ProfileBio"
-        view.addSubview(label)
-        descriptionLabel = label
-    }
-    
-    // Logout Button
-    private func setupLogoutButton() {
-        let button = UIButton(type: .custom)
-        button.setImage(UIImage(named: "logout_button"), for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
-        button.accessibilityIdentifier = "Logout"
-        view.addSubview(button)
-        logoutButton = button
-    }
-    
-    // Constraints
     private func setupConstraints() {
-        guard let avatarImageView,
-              let nameLabel,
-              let loginNameLabel,
-              let descriptionLabel,
-              let logoutButton else { return }
-        
         NSLayoutConstraint.activate([
             avatarImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
@@ -191,12 +166,8 @@ final class ProfileViewController: UIViewController, ProfileViewProtocol {
             
             descriptionLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
             descriptionLabel.topAnchor.constraint(equalTo: loginNameLabel.bottomAnchor, constant: 8),
-            
-            
             logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             logoutButton.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
-            logoutButton.widthAnchor.constraint(equalToConstant: 44),
-            logoutButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
     
